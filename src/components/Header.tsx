@@ -82,25 +82,45 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Search Bar */}
           <div className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-6">
-            <div className="relative w-full">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onScrollToCatalog();
+              }}
+              className="relative w-full"
+            >
               <input
                 type="text"
                 id="header-search-input"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    onScrollToCatalog();
+                  }
+                }}
                 placeholder="Buscar por título, autor o género..."
-                className="w-full pl-10 pr-4 py-2.5 bg-[#F5ECE9] border border-[#DAC5C2] rounded-full text-sm text-[#2D241E] placeholder-[#9E8E81] focus:outline-none focus:border-[#8C5E3C] focus:bg-white focus:ring-2 focus:ring-[#8C5E3C]/15 transition-all"
+                className="w-full pl-10 pr-9 py-2.5 bg-[#F5ECE9] border border-[#DAC5C2] rounded-full text-sm text-[#2D241E] placeholder-[#9E8E81] focus:outline-none focus:border-[#8C5E3C] focus:bg-white focus:ring-2 focus:ring-[#8C5E3C]/15 transition-all"
               />
-              <Search className="w-4 h-4 text-[#8C7464] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <button
+                type="submit"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C7464] hover:text-[#5C3218] transition-colors cursor-pointer"
+                title="Buscar en catálogo"
+                aria-label="Buscar en catálogo"
+              >
+                <Search className="w-4 h-4" />
+              </button>
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#9E8E81] hover:text-[#3B2213] bg-[#E2D2D0] rounded-full w-5 h-5 flex items-center justify-center"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#9E8E81] hover:text-[#3B2213] bg-[#E2D2D0] rounded-full w-5 h-5 flex items-center justify-center cursor-pointer hover:bg-[#DAC5C2] transition-colors"
+                  title="Limpiar búsqueda"
                 >
                   ✕
                 </button>
               )}
-            </div>
+            </form>
           </div>
 
           {/* Desktop Navigation & Actions */}
@@ -160,10 +180,18 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Mobile Actions */}
           <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
             <button
-              onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+              onClick={() => {
+                setIsSearchExpanded(!isSearchExpanded);
+                if (!isSearchExpanded) {
+                  onScrollToCatalog();
+                }
+              }}
               id="mobile-search-toggle-btn"
-              className="p-2 text-[#5C3218] hover:bg-[#EADBD9] rounded-lg transition-colors"
+              className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                isSearchExpanded ? 'bg-[#EADBD9] text-[#3B2213]' : 'text-[#5C3218] hover:bg-[#EADBD9]'
+              }`}
               aria-label="Buscar"
+              title="Buscar en el catálogo"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -195,18 +223,49 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Search Expandable Bar */}
         {isSearchExpanded && (
-          <div className="py-3 border-t border-[#EFE8DF] md:hidden">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Buscar por libro, autor, género..."
-                className="w-full pl-10 pr-4 py-2.5 bg-[#F5ECE9] border border-[#DAC5C2] rounded-xl text-sm text-[#2D241E] placeholder-[#9E8E81] focus:outline-none focus:border-[#8C5E3C]"
-                autoFocus
-              />
-              <Search className="w-4 h-4 text-[#8C7464] absolute left-3.5 top-1/2 -translate-y-1/2" />
-            </div>
+          <div className="py-3 border-t border-[#DAC5C2] md:hidden animate-in fade-in duration-200">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onScrollToCatalog();
+              }}
+              className="flex items-center gap-2"
+            >
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  id="mobile-search-input"
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      onScrollToCatalog();
+                    }
+                  }}
+                  placeholder="Buscar por libro, autor, género..."
+                  className="w-full pl-10 pr-9 py-2.5 bg-[#F5ECE9] border border-[#DAC5C2] rounded-xl text-sm text-[#2D241E] placeholder-[#9E8E81] focus:outline-none focus:border-[#8C5E3C] focus:bg-white"
+                  autoFocus
+                />
+                <Search className="w-4 h-4 text-[#8C7464] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => onSearchChange('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#9E8E81] hover:text-[#3B2213] bg-[#E2D2D0] rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
+                    title="Limpiar búsqueda"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              <button
+                type="submit"
+                onClick={onScrollToCatalog}
+                className="px-3.5 py-2.5 bg-[#5C3218] hover:bg-[#472611] text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-2xs transition-colors shrink-0 cursor-pointer"
+              >
+                <span>Buscar</span>
+              </button>
+            </form>
           </div>
         )}
 

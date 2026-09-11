@@ -25,18 +25,10 @@ function generateSvg({ width = 512, height = 512, scale = 1.35, maskable = false
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
   <rect width="${width}" height="${height}" fill="${bgColor}" />
   <g transform="translate(${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}) scale(${scale})">
-    <!-- Sparkle Stars above K and S -->
-    <g fill="${starColor}" transform="rotate(8, 208, 18)">
-      <path d="M 208,6 Q 208,18 220,18 Q 208,18 208,30 Q 208,18 196,18 Q 208,18 208,6 Z" />
-    </g>
-    <g fill="${starColor}" transform="rotate(8, 228, 29)">
-      <path d="M 228,21 Q 228,29 236,29 Q 228,29 228,37 Q 228,29 220,29 Q 228,29 228,21 Z" />
-    </g>
-
     <!-- Letter B -->
     <path d="${LOGO_PATHS.b}" fill="${mainColor}" />
-    <!-- Horizontal Underline specifically beneath B -->
-    <rect x="39" y="84" width="40" height="2.2" rx="0.5" fill="${mainColor}" />
+    <!-- Horizontal Divider Line extending from B all the way to S, separating BOOKS from EM -->
+    <rect x="39" y="84" width="208" height="2.2" rx="0.5" fill="${mainColor}" />
 
     <!-- First O: with the iconic white square/box inside -->
     <g fill="${mainColor}">
@@ -74,17 +66,10 @@ function generateHeaderBannerSvg(width = 800, height = 320) {
   <!-- Subtle decorative frame border -->
   <rect x="12" y="12" width="${width - 24}" height="${height - 24}" rx="16" fill="none" stroke="#DAC5C2" stroke-width="1.5" stroke-dasharray="6 4" />
   <g transform="translate(${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}) scale(${scale})">
-    <!-- Sparkle Stars -->
-    <g fill="${starColor}" transform="rotate(8, 208, 18)">
-      <path d="M 208,6 Q 208,18 220,18 Q 208,18 208,30 Q 208,18 196,18 Q 208,18 208,6 Z" />
-    </g>
-    <g fill="${starColor}" transform="rotate(8, 228, 29)">
-      <path d="M 228,21 Q 228,29 236,29 Q 228,29 228,37 Q 228,29 220,29 Q 228,29 228,21 Z" />
-    </g>
-
     <!-- Letter B -->
     <path d="${LOGO_PATHS.b}" fill="${mainColor}" />
-    <rect x="39" y="84" width="40" height="2.2" rx="0.5" fill="${mainColor}" />
+    <!-- Horizontal Divider Line extending from B all the way to S, separating BOOKS from EM -->
+    <rect x="39" y="84" width="208" height="2.2" rx="0.5" fill="${mainColor}" />
 
     <!-- First O: with the iconic white square/box inside -->
     <g fill="${mainColor}">

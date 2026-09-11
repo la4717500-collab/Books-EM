@@ -1,0 +1,38 @@
+{
+  "id": "/",
+  "name": "Books EM - Catálogo y Librería Online",
+  "short_name": "Books EM",
+  "description": "Catálogo y librería online Books EM con compras por WhatsApp y panel de administración.",
+  "theme_color": "#EADBD9",
+  "background_color": "#EADBD9",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

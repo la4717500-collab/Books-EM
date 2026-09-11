@@ -190,3 +190,46 @@ export async function compressImageFile(
   });
 }
 
+/**
+ * Normalizes text for search by stripping Spanish accents (tildes),
+ * punctuation, and converting to lowercase.
+ */
+export function normalizeSearchText(text: string | null | undefined): string {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove diacritics
+    .replace(/[^\w\s]/g, ' ') // replace punctuation with spaces
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Comprehensive, accent-insensitive, multi-term book search.
+ * Verifies that all terms typed by the user exist across the book's details.
+ */
+export function matchesBookSearch(book: Book, rawQuery: string): boolean {
+  const normalizedQuery = normalizeSearchText(rawQuery);
+  if (!normalizedQuery) return true;
+
+  const terms = normalizedQuery.split(' ').filter(Boolean);
+  if (terms.length === 0) return true;
+
+  // Build searchable index from all relevant book attributes
+  const searchableText = normalizeSearchText(`
+    ${book.title || ''}
+    ${book.author || ''}
+    ${book.genre || ''}
+    ${book.synopsis || ''}
+    ${book.editorial || ''}
+    ${book.isbn || ''}
+    ${book.publishedYear ? String(book.publishedYear) : ''}
+    ${book.status || ''}
+  `);
+
+  // Every single term must be present in the searchable text
+  return terms.every((term) => searchableText.includes(term));
+}
+

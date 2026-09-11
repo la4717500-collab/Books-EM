@@ -415,20 +415,10 @@ export const BooksEmLogo: React.FC<LogoProps> = ({
         className={`${sizeClasses[size]} transition-transform duration-200 group-hover:scale-[1.02]`}
         aria-label="Books EM"
       >
-        {/* Sparkle Stars above K and S */}
-        <g fill={starColor} transform="rotate(8, 208, 18)">
-          {/* Large 4-point concave star */}
-          <path d="M 208,6 Q 208,18 220,18 Q 208,18 208,30 Q 208,18 196,18 Q 208,18 208,6 Z" />
-        </g>
-        <g fill={starColor} transform="rotate(8, 228, 29)">
-          {/* Small 4-point concave star */}
-          <path d="M 228,21 Q 228,29 236,29 Q 228,29 228,37 Q 228,29 220,29 Q 228,29 228,21 Z" />
-        </g>
-
         {/* Letter B */}
         <path d={LOGO_PATHS.b} fill={mainColor} />
-        {/* Horizontal Underline ONLY directly below B */}
-        <rect x="39" y="84" width="40" height="2.2" rx="0.5" fill={mainColor} />
+        {/* Horizontal Divider Line extending from B all the way to S, separating BOOKS from EM */}
+        <rect x="39" y="84" width="208" height="2.2" rx="0.5" fill={mainColor} />
 
         {/* First O: The Didone letter O with the iconic white square/box inside */}
         <g fill={mainColor}>

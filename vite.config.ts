@@ -72,6 +72,8 @@ export default defineConfig(() => {
       tailwindcss(),
       aistudioMediaPlugin(),
       VitePWA({
+        disable: process.env.NODE_ENV !== 'production',
+        injectRegister: false,
         registerType: 'autoUpdate',
         includeAssets: [
           'icon.svg',
@@ -154,8 +156,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
-          type: 'module',
+          enabled: false,
         },
       }),
     ],

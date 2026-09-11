@@ -4,6 +4,7 @@ import { Book, SortOption, StoreSettings } from '../types';
 import { BookCard } from './BookCard';
 import { BotanicalSprig, BotanicalDivider } from './BotanicalElements';
 import { BcvRates, convertCurrency } from '../services/bcvRates';
+import { matchesBookSearch } from '../utils/helpers';
 
 interface BookCatalogProps {
   books: Book[];
@@ -59,30 +60,39 @@ export const BookCatalog: React.FC<BookCatalogProps> = ({
     return Array.from(set).sort();
   }, [books]);
 
-  // Filter and sort logic
-  const filteredBooks = useMemo(() => {
-    return books
+  // Filter and sort logic with accent-insensitive search and smart multi-term matching
+  const { filteredBooks, isExpandedSearchNotice } = useMemo(() => {
+    const hasSearch = Boolean(searchQuery.trim());
+
+    // 1. Filter books that match the search query (accent-insensitive, multi-word matching)
+    const searchMatched = books.filter((book) => {
+      if (hasSearch && !matchesBookSearch(book, searchQuery)) {
+        return false;
+      }
+      return true;
+    });
+
+    // 2. Check if selectedGenre should be applied or auto-expanded
+    let genreMatched = searchMatched;
+    let expandedNotice = false;
+
+    if (selectedGenre) {
+      const strictGenre = searchMatched.filter(
+        (b) => b.genre && b.genre.trim().toLowerCase() === selectedGenre.trim().toLowerCase()
+      );
+
+      // If user typed a search query and has 0 matches in current genre, but matches exist in catalog:
+      if (hasSearch && strictGenre.length === 0 && searchMatched.length > 0) {
+        genreMatched = searchMatched; // Expand to all genres so user's searched book is not hidden
+        expandedNotice = true;
+      } else {
+        genreMatched = strictGenre;
+      }
+    }
+
+    // 3. Apply remaining filters (Author, Status, Featured)
+    const finalFiltered = genreMatched
       .filter((book) => {
-        // Search query
-        if (searchQuery.trim()) {
-          const query = searchQuery.toLowerCase().trim();
-          const matchTitle = book.title.toLowerCase().includes(query);
-          const matchAuthor = book.author.toLowerCase().includes(query);
-          const matchGenre = book.genre.toLowerCase().includes(query);
-          const matchSynopsis = book.synopsis.toLowerCase().includes(query);
-          if (!matchTitle && !matchAuthor && !matchGenre && !matchSynopsis) {
-            return false;
-          }
-        }
-
-        // Genre (case and trim insensitive)
-        if (
-          selectedGenre &&
-          (!book.genre || book.genre.trim().toLowerCase() !== selectedGenre.trim().toLowerCase())
-        ) {
-          return false;
-        }
-
         // Author
         if (selectedAuthor && book.author !== selectedAuthor) {
           return false;
@@ -126,6 +136,8 @@ export const BookCatalog: React.FC<BookCatalogProps> = ({
             return 0;
         }
       });
+
+    return { filteredBooks: finalFiltered, isExpandedSearchNotice: expandedNotice };
   }, [books, searchQuery, selectedGenre, selectedAuthor, selectedStatus, featuredOnly, sortBy, bcvRates]);
 
   const hasActiveFilters =
@@ -186,14 +198,16 @@ export const BookCatalog: React.FC<BookCatalogProps> = ({
               id="catalog-search-input"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Buscar título, autor..."
+              placeholder="Buscar por libro, autor, género..."
               className="w-full pl-9 pr-8 py-2 bg-[#F5ECE9] border border-[#DAC5C2] rounded-xl text-xs sm:text-sm text-[#2D241E] focus:outline-none focus:border-[#8C5E3C] focus:bg-white transition-colors"
             />
             <Search className="w-4 h-4 text-[#8C7464] absolute left-3 top-1/2 -translate-y-1/2" />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => onSearchChange('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#9E8E81] hover:text-[#3B2213]"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#9E8E81] hover:text-[#3B2213] p-1 rounded-full hover:bg-[#DAC5C2] transition-colors"
+                title="Limpiar búsqueda"
               >
                 ✕
               </button>
@@ -313,6 +327,22 @@ export const BookCatalog: React.FC<BookCatalogProps> = ({
         </div>
       </div>
 
+      {/* Cross-genre Search Auto-Expansion Notice */}
+      {isExpandedSearchNotice && (
+        <div className="mb-6 p-3.5 sm:p-4 rounded-2xl bg-white border border-amber-200 text-[#5C3218] text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div>
+            <span className="font-bold">✨ Búsqueda ampliada:</span> Mostrando{' '}
+            <strong className="text-[#3B2213]">{filteredBooks.length}</strong> resultados en todo el catálogo (no había coincidencias solo dentro de «{selectedGenre}»).
+          </div>
+          <button
+            onClick={() => onSelectGenre('')}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#EADBD9] hover:bg-[#DEC9C6] text-[#5C3218] transition-colors cursor-pointer shrink-0"
+          >
+            Quitar filtro «{selectedGenre}»
+          </button>
+        </div>
+      )}
+
       {/* Books Grid */}
       {filteredBooks.length > 0 ? (
         <div
@@ -343,7 +373,9 @@ export const BookCatalog: React.FC<BookCatalogProps> = ({
             No se encontraron libros
           </h3>
           <p className="text-sm text-[#735F52] mb-6">
-            No encontramos ningún título que coincida con tus criterios de búsqueda o filtros seleccionados.
+            {searchQuery
+              ? `No encontramos ningún libro que coincida con "${searchQuery}". Intenta con otras palabras clave o restablece los filtros.`
+              : 'No encontramos ningún título que coincida con tus criterios de búsqueda o filtros seleccionados.'}
           </p>
           <button
             onClick={clearAllFilters}
