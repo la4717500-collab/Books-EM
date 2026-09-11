@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #2D241E;
+    background-color: #EADBD9;
+  }
+}
+
+.font-serif-title {
+  font-family: 'Newsreader', Garamond, Georgia, serif;
+}
+
+.font-brand {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+.font-logo {
+  font-family: 'Bodoni Moda', 'Cinzel', Didot, Georgia, serif;
+}
+
+.font-script {
+  font-family: 'Alex Brush', cursive, serif;
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #E2D2D0;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5B0AE;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A8908E;
+}
+

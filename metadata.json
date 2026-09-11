@@ -1,0 +1,8 @@
+{
+  "name": "Books EM",
+  "description": "Catálogo y librería online Books EM con carrusel de imágenes rotativo cada 5 segundos, compras por WhatsApp y panel de administración.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
