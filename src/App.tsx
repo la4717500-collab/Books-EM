@@ -28,6 +28,7 @@ const AdminPanel = React.lazy(() =>
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
+  const [isIntroExiting, setIsIntroExiting] = useState(false);
   const {
     books,
     settings,
@@ -147,9 +148,28 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#EADBD9] text-[#2C2420] selection:bg-[#DEC9C6]">
-      {/* Top Main Navigation */}
-      <Header
+    <div className="relative min-h-screen bg-[#EADBD9]">
+      {/* Animated App Intro Splash with Books EM Brand Logo (Guaranteed to be active first) */}
+      {showIntro && (
+        <AppIntroSplash
+          onComplete={() => {
+            setShowIntro(false);
+            setIsIntroExiting(false);
+          }}
+          onExiting={() => setIsIntroExiting(true)}
+          storeName={settings.storeName}
+        />
+      )}
+
+      {/* Main Store Content - strictly hidden while loading splash is active, then smoothly fades in as splash exits */}
+      <div
+        className={`min-h-screen flex flex-col bg-[#EADBD9] text-[#2C2420] selection:bg-[#DEC9C6] transition-opacity duration-300 ${
+          showIntro && !isIntroExiting ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+        }`}
+        aria-hidden={showIntro && !isIntroExiting}
+      >
+        {/* Top Main Navigation */}
+        <Header
         settings={settings}
         wishlistCount={wishlistIds.length}
         bcvRates={bcvRates}
@@ -254,14 +274,7 @@ export default function App() {
         manualTrigger={manualInstallTrigger}
         onManualTriggerHandled={() => setManualInstallTrigger(false)}
       />
-
-      {/* Animated App Intro Splash with Books EM Brand Logo */}
-      {showIntro && (
-        <AppIntroSplash
-          onComplete={() => setShowIntro(false)}
-          storeName={settings.storeName}
-        />
-      )}
+      </div>
     </div>
   );
 }

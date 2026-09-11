@@ -5,16 +5,27 @@ import { ArrowRight, Sparkles, X } from 'lucide-react';
 
 interface AppIntroSplashProps {
   onComplete: () => void;
+  onExiting?: () => void;
   storeName?: string;
 }
 
 export const AppIntroSplash: React.FC<AppIntroSplashProps> = ({
   onComplete,
+  onExiting,
   storeName = 'Books EM',
 }) => {
   const [isExiting, setIsExiting] = useState(false);
 
-  // Auto-dismiss after 2.6 seconds
+  // Prevent background scrolling while splash is active
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
+  // Auto-dismiss after 2.8 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       handleExit();
@@ -32,13 +43,17 @@ export const AppIntroSplash: React.FC<AppIntroSplashProps> = ({
       clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [isExiting]);
 
   const handleExit = () => {
+    if (isExiting) return;
     setIsExiting(true);
+    if (onExiting) {
+      onExiting();
+    }
     setTimeout(() => {
       onComplete();
-    }, 500);
+    }, 450);
   };
 
   return (
@@ -46,11 +61,12 @@ export const AppIntroSplash: React.FC<AppIntroSplashProps> = ({
       {!isExiting && (
         <motion.div
           id="app-intro-splash-screen"
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.02 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#EADBD9] overflow-hidden select-none"
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          style={{ backgroundColor: '#EADBD9' }}
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#EADBD9] overflow-hidden select-none"
           onClick={handleExit}
         >
           {/* Subtle warm background radial light */}
